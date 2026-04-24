@@ -1,0 +1,29 @@
+services:
+  # Motor de Streaming (Stremio Service)
+  stremio-runtime:
+    image: stremio/server:latest
+    container_name: stremio-server
+    restart: unless-stopped
+    # Acceso a la GPU integrada (QuickSync del i5-8400T)
+    device_cgroup_rules:
+      - 'c 226:* rmw'
+    devices:
+      - /dev/dri:/dev/dri 
+    ports:
+      - "11470:11470"
+    volumes:
+      - ./stremio-data:/root/.stremio-server
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+
+  # Interfaz Web (Estilo Netflix)
+  stremio-web:
+    image: stremio/stremio-web:latest
+    container_name: stremio-web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - stremio-runtime
