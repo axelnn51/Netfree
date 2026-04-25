@@ -18,9 +18,14 @@ Este proyecto despliega un servidor de streaming tipo Netflix usando Docker en U
 3. ¡Listo! Ya puedes empezar a disfrutar de tu Netflix personal. La conexión entre la interfaz web y el servidor ya está preconfigurada automáticamente.
 
 ### 🌟 Recomendación para Idioma (Español)
-Al configurar **Torrentio**, selecciona:
+Al configurar **Torrentio** (https://torrentio.strem.fun/configure), selecciona:
 - **Priority foreign language**: Spanish.
-- **Exclusion**: Deja marcados los formatos que no quieras (ej: 4K si tu internet es lento).
+- **Exclusion**: Marca las calidades que no desees ver (ej: 480p, 720p, cam, screener) para quedarte solo con 1080p y 4K.
+
+### 🌐 Poner Stremio en Español
+1. En Stremio Web, ve a **Settings** (icono de engranaje).
+2. En la pestaña **General**, cambia **Interface Language** a `Spanish`.
+3. En la pestaña **Player**, cambia **Default Audio Track** y **Default Subtitles** a `Spanish`.
 
 ## 🛠️ Hardware Optimizado
 - **CPU**: i5-8400T (Soporte QuickSync activado en el compose).
