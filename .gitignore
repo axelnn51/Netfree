@@ -7,3 +7,7 @@ stremio-data/
 Thumbs.db
 .idea/
 .vscode/
+
+# Environment Variables
+*.env
+.env
