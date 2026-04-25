@@ -1,0 +1,129 @@
+services:
+  mediafusion:
+    image: mhdzumair/mediafusion:5.4.9
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - POSTGRES_URI=postgresql+asyncpg://mediafusion:mediafusion@postgres:5432/mediafusion
+      - REDIS_URL=redis://redis:6379
+      - PROWLARR_URL=http://prowlarr:9696
+      - SCRAPLING_CDP_URL=ws://browserless:3000
+      - TASKIQ_SINGLE_WORKER_MODE=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      browserless:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 5
+      start_period: 20m
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - mediafusion-network
+
+  postgres:
+    image: postgres:18-alpine
+    shm_size: 512mb
+    environment:
+      POSTGRES_USER: mediafusion
+      POSTGRES_PASSWORD: mediafusion
+      POSTGRES_DB: mediafusion
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=256MB"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mediafusion -d mediafusion"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - mediafusion-network
+
+  redis:
+    image: redis:latest
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --save 60 1 --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli --raw INFO | grep -q '^loading:0$'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - mediafusion-network
+
+  browserless:
+    image: browserless/chrome:latest
+    environment:
+      - ENABLE_DEBUGGER=false
+      - PREBOOT_CHROME=true
+      - MAX_CONCURRENT_SESSIONS=4
+      - CONNECTION_TIMEOUT=60000
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - mediafusion-network
+
+  prowlarr:
+    image: ghcr.io/hotio/prowlarr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=America/Lima
+    ports:
+      - "9696:9696"
+    volumes:
+      - prowlarr-config:/config
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - mediafusion-network
+
+volumes:
+  postgres-data:
+    driver: local
+  prowlarr-config:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  mediafusion-network:
+    driver: bridge
