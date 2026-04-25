@@ -13,7 +13,7 @@ Este proyecto despliega un servidor de streaming tipo Netflix usando Docker en U
 
 ## ⚙️ Configuración Post-Instalación
 
-1. Accede a `http://tu-ip-servidor:8080`.
+1. Accede a `http://tu-ip-servidor:8081`.
 2. Ve a la sección de **Addons** e instala **Torrentio** (si no lo tienes, puedes instalarlo desde https://torrentio.strem.fun).
 3. ¡Listo! Ya puedes empezar a disfrutar de tu Netflix personal. La conexión entre la interfaz web y el servidor ya está preconfigurada automáticamente.
 

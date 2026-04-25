@@ -10,7 +10,7 @@ services:
     devices:
       - /dev/dri:/dev/dri 
     ports:
-      - "8080:8080" # Web UI y Streaming Server
+      - "8081:8080" # Web UI y Streaming Server
     volumes:
       - ./stremio-data:/root/.stremio-server
     environment:
