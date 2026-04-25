@@ -1,22 +1,29 @@
 services:
-  # Stremio (Motor de Streaming + Interfaz Web Integrada)
-  stremio:
-    image: tsaridas/stremio-docker:latest
-    container_name: stremio
+  # Motor de Streaming (Stremio Service Oficial)
+  stremio-runtime:
+    image: stremio/server:latest
+    container_name: stremio-server
     restart: unless-stopped
-    # Acceso a la GPU integrada (QuickSync del i5-8400T)
+    # Acceso a la GPU integrada para Transcodificación por hardware
     device_cgroup_rules:
       - 'c 226:* rmw'
     devices:
       - /dev/dri:/dev/dri 
     ports:
-      - "8081:8080" # Web UI y Streaming Server
+      - "11470:11470"
     volumes:
       - ./stremio-data:/root/.stremio-server
-    environment:
-      - NO_CORS=1
-      - AUTO_SERVER_URL=1
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
+
+  # Interfaz Web (Estilo Netflix Oficial)
+  stremio-web:
+    image: stremio/stremio-web:latest
+    container_name: stremio-web
+    restart: unless-stopped
+    ports:
+      - "8081:80" # Web UI en el puerto 8081
+    depends_on:
+      - stremio-runtime
